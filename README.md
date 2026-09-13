@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="Icon/mangodynamic.png" width="140" alt="DynamicMango icon">
+<img src="mangodynamic.png" width="140" alt="DynamicMango icon">
 
 # 🥭 DynamicMango
 
@@ -11,6 +11,7 @@ Made by Mingyu 🧑‍💻
 <br>
 
 ![macOS](https://img.shields.io/badge/macOS-14%2B-202020?style=for-the-badge&logo=apple&logoColor=white)
+![Swift](https://img.shields.io/badge/Swift-SwiftUI-FA7343?style=for-the-badge&logo=swift&logoColor=white)
 ![Version](https://img.shields.io/badge/version-1.0.0-7C5CFF?style=for-the-badge)
 ![Status](https://img.shields.io/badge/status-in%20development-F59E0B?style=for-the-badge)
 ![Price](https://img.shields.io/badge/price-free-2EA043?style=for-the-badge)
@@ -24,12 +25,14 @@ Made by Mingyu 🧑‍💻
 > **DynamicMango is in development.** 🚧 The notch draws itself, now playing works, the shelf accepts
 > drops, and the settings window is real — but several features are built and not yet proven against
 > the messy real world, and they are listed honestly in
-> [🚧 Known limitations](#-known-limitations) rather than quietly.
+> [🚧 Known limitations](#-known-limitations) rather than quietly. `checklist.json` is the
+> source of truth: **49 of 77 items done, 9 in progress, 18 to go** as of its last update.
 
 > [!NOTE]
 > **A boringNotch replacement, written clean-room.** boringNotch's behaviour was observed from the
 > running app — its bundle, its settings, its network endpoints — and reimplemented. Its source was
-> never read. That is a standing rule of the project, not a convenience. 🧼
+> never read. That rule is recorded in `checklist.json` under `ground_rules` so it never gets treated
+> as a shortcut when something turns out to be hard. 🧼
 
 ---
 
@@ -39,7 +42,7 @@ Made by Mingyu 🧑‍💻
 | --- | --- | --- |
 | [🧐 Why this exists](#-why-this-exists) | [📥 Install](#-install) | [📐 Measuring your notch](#-measuring-your-notch) |
 | [⚙️ Configuration](#️-configuration) | [🔐 Permissions](#-permissions) | [🎹 The piano roll](#-the-piano-roll) |
-| [🚧 Known limitations](#-known-limitations) | [🗂️ Where things live](#️-where-things-live) | [🔔 Updates](#-updates) |
+| [🚧 Known limitations](#-known-limitations) | [🗂️ Where things live](#️-where-things-live) | [🧱 Source layout](#-source-layout) |
 | [🗑️ Uninstall](#️-uninstall) | [⚖️ Licence](#️-licence) | |
 
 ---
@@ -57,18 +60,29 @@ an aspiration: nothing is hardcoded with the intention of making it configurable
 
 ## 📥 Install
 
-Grab the `.dmg` from **[the Releases page](https://github.com/mannnnnnnngo/DynamicMango/releases)**,
-open it, and drag **DynamicMango** onto Applications. It runs as a background agent — no Dock icon.
-Needs macOS 14 or newer, on a MacBook with a notch.
+```bash
+./make_signing_cert.sh   # once
+./build_app.sh
+```
 
-> [!NOTE]
-> DynamicMango is still in development, so there may not be a build on that page yet. 🚧
+Installs **DynamicMango.app** into `/Applications` and runs it as a background agent.
 
 > [!IMPORTANT]
-> The first time you open it, macOS blocks it — the app isn't signed with a paid Apple developer
-> account. Double-click DynamicMango, press **Done** on the warning, then go to
-> **&#63743; → System Settings → Privacy & Security**, scroll to the bottom, and press **Open Anyway**.
-> Press **Open Anyway** once more to confirm. You only do this once. 🔓
+> Run `make_signing_cert.sh` first and it genuinely matters here. Ad-hoc signatures get a new code hash
+> on every build, and macOS treats a changed hash as a different app — so every rebuild would drop your
+> Calendar, Camera and audio permissions and re-prompt. A stable self-signed identity fixes that
+> permanently. 🔏
+
+Unlike [MangoBar](https://github.com/mannnnnnnngo/Mangobar), this is a **real compile**: Swift has no
+thin-shim option, so editing source means rebuilding. `./build_app.sh` takes a few seconds. `VERSION`
+is the single source of truth for the version number, and the build refuses to run if
+`Core/Version.swift` has drifted from it.
+
+For development without installing:
+
+```bash
+./run.sh
+```
 
 First run writes `~/.config/dynamicmango/config.json`.
 
@@ -91,7 +105,7 @@ notch pixels  : 370.0 x 66.0
 
 The notch rect is derived entirely from public API — `safeAreaInsets.top` for the height, and the width
 of the two auxiliary menu-bar strips either side for the width. If the panel is ever a hair misaligned,
-`appearance.widthAdjust` and `heightAdjust` nudge it without reinstalling, and
+`appearance.widthAdjust` and `heightAdjust` nudge it without recompiling, and
 `debug.showGeometryOverlay` strokes the computed rect in magenta so you can *see* the error instead of
 guessing at it. 🔍
 
@@ -188,7 +202,7 @@ Written as they are hit, not at the end. 📝
   quiet by design; check `--probe-spectrum` if they look fake.
 - **No brightness peek.** Volume and charge use public, event-driven APIs. Brightness has no public
   read API on Apple Silicon internal displays — it needs a private framework — so it is deferred rather
-  than bodged and degrades to "no brightness HUD" rather than crashing.
+  than bodged, isolated behind one file, and degrades to "no brightness HUD" rather than crashing.
 - **System HUD suppression is off by default.** It works by suspending `OSDUIHelper`, for which there
   is no API. Recovery is proven (restore on quit, heal at next launch, a menu item), but suppression
   itself is untested end to end, because `OSDUIHelper` only exists once you press a volume key.
@@ -205,16 +219,60 @@ Written as they are hit, not at the end. 📝
 | `~/Library/Application Support/DynamicMango/Scores` | 🎼 Scores delivered by Mango MIDI |
 | `~/Library/Logs/DynamicMango/` | 📜 Logs, when `debug.fileLogging` is on |
 
-None of it is in this repository — what you were listening to is not something a download should
-carry. 🔒
+None of it is in this repository, and `Scores/` is in `.gitignore` — what you were listening to is not
+something a clone should carry. 🔒
 
 ---
 
-## 🔔 Updates
+## 🧱 Source layout
 
-DynamicMango checks [`updates/latest.json`](updates/latest.json) on this repository and tells you when
-a newer version is out. It carries nothing about you, and the download is whatever is attached to the
-matching release. 📡
+Layered, so any one piece can be replaced without touching the rest. This is a hard rule, not a
+guideline — the same layering as MangoBar:
+
+```
+Sources/DynamicMango/
+  main.swift            entry point, diagnostic flags
+  App/                  AppDelegate - wiring only, no logic
+  Core/                 logging, models, state machines.  NO platform imports.
+  Config/               defaults + JSON store with live reload
+  MacOS/                ALL platform API lives here: AppKit, IOKit, CoreAudio,
+                        private frameworks. Nothing else may import them.
+  Feeds/                where content comes from: now playing, calendar, battery, audio taps
+  Actions/              what user interactions do
+  UI/                   views + theme
+    Widgets/            one file per widget + a registry
+```
+
+**The rules:**
+
+1. **`Core/` imports nothing platform-specific.** If it needs a screen or a process, it's in the wrong
+   layer.
+2. **Platform API is quarantined in `MacOS/`,** one file per concern. This matters more than usual
+   here: several features use private frameworks (brightness) or fragile entitled paths (now playing),
+   and when Apple breaks them the blast radius must be one file with a documented fallback.
+3. **`UI/` never touches a platform API directly** and never reads a setting from anywhere but
+   `Config/`.
+4. **Every feature registers its defaults in `Config/` as it is written.** Never hardcode a value
+   intending to make it configurable later — customization depth is the reason this project exists.
+5. **Adding a widget is:** write the module in `UI/Widgets/`, add one line to the registry, name it in
+   config. If it takes more than that, the registry is wrong.
+6. **Restyling touches `UI/Theme.swift` only.**
+
+> [!IMPORTANT]
+> **A window intercepts every click inside its frame, no matter what it draws there.** Drawing nothing
+> does not make a region click-through, and neither does a clear background. `ARCHITECTURE.md` has the
+> full account of how the panel stays out of the way of everything it overlaps. 🖱️
+
+| 📄 File | Purpose |
+| --- | --- |
+| `MacOS/NotchGeometry.swift` | Measuring the hardware notch from public API alone |
+| `MacOS/NotchPanel.swift` | The borderless window, and its mouse transparency |
+| `Core/MangoScores.swift` | Reading what Mango MIDI delivers |
+| `Feeds/NowPlayingFeed.swift` | What's playing, through the entitled adapter |
+| `MacOS/ProcessTap.swift` | The per-process audio tap the visualizer and roll share |
+| `UI/Theme.swift` | Every colour and metric. Restyling touches this file only |
+| `checklist.json` | What is done, what isn't, and the ground rules |
+| `ARCHITECTURE.md` | The layering, and the reasons behind the awkward parts |
 
 ---
 
@@ -225,18 +283,18 @@ pkill -x DynamicMango
 rm -rf /Applications/DynamicMango.app ~/.config/dynamicmango ~/Library/Logs/DynamicMango
 ```
 
-Nothing is installed system-wide and no system settings are modified.
+Then delete this folder. Nothing is installed system-wide and no system settings are modified.
 
 ---
 
 ## ⚖️ Licence
 
-DynamicMango is **free to use** but **not open source**. It may not be redistributed, modified,
-resold, reverse engineered, or presented as anyone else's work. The full terms are in
-[`LICENSE`](LICENSE).
+DynamicMango is **free to use** but **not open source**. The source is published here to be read, not
+reused: it may not be redistributed, resold, built upon, or presented as anyone else's work. The full
+terms are in [`LICENSE`](LICENSE).
 
-DynamicMango uses `mediaremote-adapter` (BSD 3-Clause) and basic-pitch. Those are not mine and are not
-covered by the above — each carries its own licence.
+`third_party/` is not mine and is not covered by that — `mediaremote-adapter` (BSD 3-Clause) and
+basic-pitch each carry their own licence beside them.
 
 Copyright © 2026 Mingyu. All rights reserved.
 
@@ -246,6 +304,8 @@ Copyright © 2026 Mingyu. All rights reserved.
 
 **Made with 🥭 by Mingyu**
 
-🆓 Free forever · 🔒 No permissions to run · 🎛️ A knob for everything
+🚧 In development · 🔒 No permissions needed to run · 🎹 Fed by [Mango MIDI](https://github.com/mannnnnnnngo/MangoMIDI)
+
+Part of [🥭 MangoApps](https://github.com/mannnnnnnngo/MangoApps)
 
 </div>
