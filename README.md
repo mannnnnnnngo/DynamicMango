@@ -31,8 +31,8 @@ Made by Mingyu 🧑‍💻
 > [!NOTE]
 > **Written clean-room.** Where another notch app already did something, its behaviour was observed
 > from the running app — its bundle, its settings, its network endpoints — and written again from
-> scratch. No other project's source was ever read. That rule is recorded in `checklist.json`
-> under `ground_rules` so it never gets treated as a shortcut when something turns out to be hard. 🧼
+> scratch. No other project's source was ever read. That rule is recorded in `checklist.json` under `ground_rules` so it never gets treated
+> as a shortcut when something turns out to be hard. 🧼
 
 ---
 
@@ -43,8 +43,7 @@ Made by Mingyu 🧑‍💻
 | [🧐 Why this exists](#-why-this-exists) | [📥 Install](#-install) | [📐 Measuring your notch](#-measuring-your-notch) |
 | [⚙️ Configuration](#️-configuration) | [🔐 Permissions](#-permissions) | [🎹 The piano roll](#-the-piano-roll) |
 | [🚧 Known limitations](#-known-limitations) | [🗂️ Where things live](#️-where-things-live) | [🧱 Source layout](#-source-layout) |
-| [🕶️ Privacy](#️-privacy) | [🆕 What's new in 1.1.0](#-whats-new-in-110) | [🗑️ Uninstall](#️-uninstall) |
-| [⚖️ Licence](#️-licence) | | |
+| [🗑️ Uninstall](#️-uninstall) | [⚖️ Licence](#️-licence) | |
 
 ---
 
@@ -54,25 +53,16 @@ Two reasons, in that order: wanting my own, and wanting **deep customization** o
 transparency, layout, preferences.
 
 Every feature exposes its parameters in `config.json` from the moment it is written, and a theme is
-data rather than code. That is a rule, not an aspiration: nothing is hardcoded with the intention of
-making it configurable later.
+data rather than code. That is a rule, not
+an aspiration: nothing is hardcoded with the intention of making it configurable later.
 
 ---
 
 ## 📥 Install
 
-Download **`dynamicmango-1.1.0.dmg`** from the
-[latest release](https://github.com/mannnnnnnngo/DynamicMango/releases/latest), drag the mango onto
-Applications, then **right-click DynamicMango → Open** the first time. That step matters — the app
-isn't signed with a paid Apple developer account, and right-click → Open is Apple's own way past
-the warning. You only do it once.
-
-### Building it yourself
-
 ```bash
 ./make_signing_cert.sh   # once
-./build_app.sh           # builds and installs to /Applications
-./package.sh             # builds and wraps it in dist/dynamicmango-<version>.dmg
+./build_app.sh
 ```
 
 Installs **DynamicMango.app** into `/Applications` and runs it as a background agent.
@@ -94,7 +84,7 @@ For development without installing:
 ./run.sh
 ```
 
-First run writes `~/.config/dynamicmango/config.json` and shows the six-step tour.
+First run writes `~/.config/dynamicmango/config.json`.
 
 ---
 
@@ -166,37 +156,6 @@ real advantage over MangoBar and is protected as a design constraint.
 | 🎹 Piano roll | The same tap as the visualizer; no additional permission | No roll |
 
 Nothing is requested until you use the feature that needs it.
-
----
-
-## 🕶️ Privacy
-
-**Nothing leaves your Mac.** There is no account, no analytics, and no server — there is nowhere
-for anything to go.
-
-- The visualiser and the piano roll tap the audio your Mac is already playing. What the tap hears
-  becomes bars and notes in memory and is then discarded: never recorded, never written to disk,
-  never uploaded.
-- What is playing, the lyrics read out of the player you already have open, and anything you put
-  on the shelf are all read here and stay here.
-- Your settings are one JSON file in your own home folder.
-
-The only request DynamicMango makes by itself is reading one small text file on GitHub to find out
-whether a newer version exists. It sends nothing about you or this Mac, and Settings → Updates
-switches even that off. The same words are in the app, in Settings → **Privacy**.
-
----
-
-## 🆕 What's new in 1.1.0
-
-| | |
-|---|---|
-| 🗂️ **Sidebar settings** | Nine panes grouped into Notch / What it shows / App, each with a line saying what it is for. The seven segments it replaced had room for one word each and nowhere to grow. |
-| 🚀 **Open at login** | Settings → General. |
-| ❓ **A tutorial** | Six steps, shown on first launch and replayable from the menu bar item. |
-| 🕶️ **A Privacy pane** | What the audio tap does, in the app rather than only in this file. |
-| 🔽 **Updates** | Unchanged, but now a pane with a name instead of the eighth segment. |
-| 💿 **A proper installer** | The disk image opens the same drag-to-Applications window every Mango app uses. |
 
 ---
 
