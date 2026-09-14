@@ -12,7 +12,7 @@ Made by Mingyu 🧑‍💻
 
 ![macOS](https://img.shields.io/badge/macOS-14%2B-202020?style=for-the-badge&logo=apple&logoColor=white)
 ![Swift](https://img.shields.io/badge/Swift-SwiftUI-FA7343?style=for-the-badge&logo=swift&logoColor=white)
-![Version](https://img.shields.io/badge/version-1.0.0-7C5CFF?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.1.0-7C5CFF?style=for-the-badge)
 ![Status](https://img.shields.io/badge/status-in%20development-F59E0B?style=for-the-badge)
 ![Price](https://img.shields.io/badge/price-free-2EA043?style=for-the-badge)
 ![Permissions](https://img.shields.io/badge/permissions%20to%20run-none-0EA5E9?style=for-the-badge)
@@ -29,10 +29,10 @@ Made by Mingyu 🧑‍💻
 > source of truth: **49 of 77 items done, 9 in progress, 18 to go** as of its last update.
 
 > [!NOTE]
-> **A boringNotch replacement, written clean-room.** boringNotch's behaviour was observed from the
-> running app — its bundle, its settings, its network endpoints — and reimplemented. Its source was
-> never read. That rule is recorded in `checklist.json` under `ground_rules` so it never gets treated
-> as a shortcut when something turns out to be hard. 🧼
+> **Written clean-room.** Where another notch app already did something, its behaviour was observed
+> from the running app — its bundle, its settings, its network endpoints — and written again from
+> scratch. No other project's source was ever read. That rule is recorded in `checklist.json`
+> under `ground_rules` so it never gets treated as a shortcut when something turns out to be hard. 🧼
 
 ---
 
@@ -43,26 +43,36 @@ Made by Mingyu 🧑‍💻
 | [🧐 Why this exists](#-why-this-exists) | [📥 Install](#-install) | [📐 Measuring your notch](#-measuring-your-notch) |
 | [⚙️ Configuration](#️-configuration) | [🔐 Permissions](#-permissions) | [🎹 The piano roll](#-the-piano-roll) |
 | [🚧 Known limitations](#-known-limitations) | [🗂️ Where things live](#️-where-things-live) | [🧱 Source layout](#-source-layout) |
-| [🗑️ Uninstall](#️-uninstall) | [⚖️ Licence](#️-licence) | |
+| [🕶️ Privacy](#️-privacy) | [🆕 What's new in 1.1.0](#-whats-new-in-110) | [🗑️ Uninstall](#️-uninstall) |
+| [⚖️ Licence](#️-licence) | | |
 
 ---
 
 ## 🧐 Why this exists
 
-Two reasons, in that order: wanting my own version, and wanting **deeper customization** than
-boringNotch offers — colour, transparency, layout, preferences.
+Two reasons, in that order: wanting my own, and wanting **deep customization** of it — colour,
+transparency, layout, preferences.
 
-boringNotch has opinions; DynamicMango has knobs. Every feature exposes its parameters in
-`config.json` from the moment it is written, and a theme is data rather than code. That is a rule, not
-an aspiration: nothing is hardcoded with the intention of making it configurable later.
+Every feature exposes its parameters in `config.json` from the moment it is written, and a theme is
+data rather than code. That is a rule, not an aspiration: nothing is hardcoded with the intention of
+making it configurable later.
 
 ---
 
 ## 📥 Install
 
+Download **`dynamicmango-1.1.0.dmg`** from the
+[latest release](https://github.com/mannnnnnnngo/DynamicMango/releases/latest), drag the mango onto
+Applications, then **right-click DynamicMango → Open** the first time. That step matters — the app
+isn't signed with a paid Apple developer account, and right-click → Open is Apple's own way past
+the warning. You only do it once.
+
+### Building it yourself
+
 ```bash
 ./make_signing_cert.sh   # once
-./build_app.sh
+./build_app.sh           # builds and installs to /Applications
+./package.sh             # builds and wraps it in dist/dynamicmango-<version>.dmg
 ```
 
 Installs **DynamicMango.app** into `/Applications` and runs it as a background agent.
@@ -84,7 +94,7 @@ For development without installing:
 ./run.sh
 ```
 
-First run writes `~/.config/dynamicmango/config.json`.
+First run writes `~/.config/dynamicmango/config.json` and shows the six-step tour.
 
 ---
 
@@ -159,6 +169,37 @@ Nothing is requested until you use the feature that needs it.
 
 ---
 
+## 🕶️ Privacy
+
+**Nothing leaves your Mac.** There is no account, no analytics, and no server — there is nowhere
+for anything to go.
+
+- The visualiser and the piano roll tap the audio your Mac is already playing. What the tap hears
+  becomes bars and notes in memory and is then discarded: never recorded, never written to disk,
+  never uploaded.
+- What is playing, the lyrics read out of the player you already have open, and anything you put
+  on the shelf are all read here and stay here.
+- Your settings are one JSON file in your own home folder.
+
+The only request DynamicMango makes by itself is reading one small text file on GitHub to find out
+whether a newer version exists. It sends nothing about you or this Mac, and Settings → Updates
+switches even that off. The same words are in the app, in Settings → **Privacy**.
+
+---
+
+## 🆕 What's new in 1.1.0
+
+| | |
+|---|---|
+| 🗂️ **Sidebar settings** | Nine panes grouped into Notch / What it shows / App, each with a line saying what it is for. The seven segments it replaced had room for one word each and nowhere to grow. |
+| 🚀 **Open at login** | Settings → General. |
+| ❓ **A tutorial** | Six steps, shown on first launch and replayable from the menu bar item. |
+| 🕶️ **A Privacy pane** | What the audio tap does, in the app rather than only in this file. |
+| 🔽 **Updates** | Unchanged, but now a pane with a name instead of the eighth segment. |
+| 💿 **A proper installer** | The disk image opens the same drag-to-Applications window every Mango app uses. |
+
+---
+
 ## 🎹 The piano roll
 
 The notch can draw the notes of what is playing. Two things can feed it:
@@ -188,7 +229,7 @@ Written as they are hit, not at the end. 📝
   and absent from the Web API. Lyrics come from lrclib.net, which means the title, artist, album and
   duration of what you are playing leave your machine — no identifiers, no account. Results are cached
   on disk so a repeat play is offline. Set `lyrics.enabled` to `false` and there is no network traffic
-  at all. This is exactly what boringNotch already does; the difference is that this says so.
+  at all. Any notch app that shows you lyrics is doing this; the difference is that this one says so.
 - **The piano roll has not been seen rendering in the panel.** Every stage under it is verified — the
   model loads and compiles at runtime, `--probe-transcribe --self-test` recovers synthetic notes at the
   right pitch and time, and `--probe-transcribe` transcribes real audio from a live tap — but the view
