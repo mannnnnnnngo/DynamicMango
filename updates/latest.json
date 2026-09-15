@@ -1,10 +1,10 @@
 {
-  "version": "1.1.0",
-  "build": 10100,
-  "publishedAt": "2026-09-14",
+  "version": "1.1.1",
+  "build": 10101,
+  "publishedAt": "2026-09-15",
   "minimumSystemVersion": "26.0",
-  "notes": "- readme wording\n- sidebar settings, tutorial, privacy pane, open at login\n- check for updates menu item\n- updater and updates preferences pane\n- release 1.0.0\n- fix version stamp on first release\n- merge release workflow\n- build prerequisites for ci\n- mark scripts executable\n- release workflow",
-  "downloadURL": "https://github.com/mannnnnnnngo/DynamicMango/releases/download/v1.1.0/dynamicmango-1.1.0.dmg",
-  "sha256": "0b3a46e7e79651430ba8ad5fccb9b25b22803c8ccfacda43d12b40ec847a6610",
-  "releasePage": "https://github.com/mannnnnnnngo/DynamicMango/releases/tag/v1.1.0"
+  "notes": "update checks are now instant",
+  "downloadURL": "https://github.com/mannnnnnnngo/DynamicMango/releases/download/v1.1.1/dynamicmango-1.1.1.dmg",
+  "sha256": "9b0901ff36c1b0d5a802f98f3aa73bbf99cfc8d4cea693a8173877f3740608b6",
+  "releasePage": "https://github.com/mannnnnnnngo/DynamicMango/releases/tag/v1.1.1"
 }
